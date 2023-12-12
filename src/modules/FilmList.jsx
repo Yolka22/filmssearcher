@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Input, Typography } from '@mui/joy';
+import { Box, Input, Button } from '@mui/joy';
 import FilmCard from './FilmCard';
 
 export default function FilmList({ films }) {
@@ -10,9 +10,15 @@ export default function FilmList({ films }) {
     const inputText = event.target.value;
     setSearchText(inputText);
     const filteredFilms = films.filter((film) =>
-      film.name.toLowerCase().startsWith(inputText.toLowerCase())
+      film.name.toLowerCase().includes(inputText.toLowerCase())
     );
     setFilmArray(filteredFilms);
+  };
+
+  const handleSort = (type) => {
+    const sortedFilms = [...filmArray];
+    sortedFilms.sort((a, b) => (a[type] > b[type] ? 1 : -1));
+    setFilmArray(sortedFilms);
   };
 
   return (
@@ -22,6 +28,8 @@ export default function FilmList({ films }) {
         value={searchText}
         onChange={handleSearch}
       />
+      <Button onClick={() => handleSort('name')}>Сортировка по названию</Button>
+      <Button onClick={() => handleSort('year')}>Сортировка по году</Button>
       {filmArray.map((film) => (
         <FilmCard key={film.id} film={film} />
       ))}
