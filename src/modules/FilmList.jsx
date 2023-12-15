@@ -1,38 +1,43 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Box, Input, Button } from '@mui/joy';
 import FilmCard from './FilmCard';
+import Pagination from '@mui/material/Pagination';
 
-export default function FilmList({ films }) {
-  const [filmArray, setFilmArray] = useState(films);
-  const [searchText, setSearchText] = useState('');
+export default function FilmList() {
+  const itemsPerPage = 4;
 
-  const handleSearch = (event) => {
-    const inputText = event.target.value;
-    setSearchText(inputText);
-    const filteredFilms = films.filter((film) =>
-      film.name.toLowerCase().includes(inputText.toLowerCase())
-    );
-    setFilmArray(filteredFilms);
+  // Use useSelector to get films from the local component state
+  const { films } = useSelector((state) => state);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
   };
 
-  const handleSort = (type) => {
-    const sortedFilms = [...filmArray];
-    sortedFilms.sort((a, b) => (a[type] > b[type] ? 1 : -1));
-    setFilmArray(sortedFilms);
-  };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedFilms = films.slice(startIndex, endIndex);
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <Input
         placeholder="Поиск по имени..."
-        value={searchText}
-        onChange={handleSearch}
       />
-      <Button onClick={() => handleSort('name')}>Сортировка по названию</Button>
-      <Button onClick={() => handleSort('year')}>Сортировка по году</Button>
-      {filmArray.map((film) => (
-        <FilmCard key={film.id} film={film} />
-      ))}
+
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+        {paginatedFilms.map((film) => (
+          <FilmCard key={film.id} film={film} sx={{ margin: '8px' }} />
+        ))}
+      </Box>
+
+      <Pagination
+        count={Math.ceil(films.length / itemsPerPage)}
+        page={currentPage}
+        onChange={handlePageChange}
+      />
     </Box>
   );
 }
