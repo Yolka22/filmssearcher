@@ -1,13 +1,39 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import Root from "./routes/Root";
+import FilmList from "./modules/FilmList";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import { Provider } from "react-redux";
+import store from "./redux/store";
+
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AddFilm from "./modules/AddFilm";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      {
+        path: "/films",
+        element: <FilmList />,
+      },
+      {
+        path: "/films/admin",
+        element: <AddFilm />,
+      },
+    ],
+  },
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );
 
